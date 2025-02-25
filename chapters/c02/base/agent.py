@@ -12,6 +12,6 @@ class Agent:
     def perceive(self, percept: Percept, environment: Environment) -> Action:
         raise NotImplementedError("This method should be overridden by subclasses")
     
+    # React to the effects of the action performed by the acting agent
     def react(self, environment: Environment, acting_agent, action_effects: list[Effect]):
-        # React to the effects of the action performed by the acting agent
         pass

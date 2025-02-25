@@ -8,8 +8,8 @@ class Action:
         self.name = name
         self.cost = cost
 
+    # TODO: Override this method in subclasses to define specific actions!
     def perform(self, agent: Agent, environment: Environment) -> list[Effect]:
-        # TODO: Override this method in subclasses to define specific actions
         raise NotImplementedError("This method should be overridden by subclasses")
 
     def __repr__(self):
