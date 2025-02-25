@@ -1,46 +1,45 @@
-
-
-import datetime
 from chapters.c02.base.action import Action
 from chapters.c02.base.agent import Agent
 from chapters.c02.base.effect import Effect
 from chapters.c02.base.environment import Environment
 from chapters.c02.base.percept import Percept
+from chapters.c02.vacuum.vacuum_agent import VacuumAgent
+from chapters.c02.vacuum.vacuum_environment import VacuumEnvironment
 
 
-class ReflexVacuumAgent(Agent):
+class ReflexVacuumAgent(VacuumAgent):
     def __init__(self):
-        self.location = 'A'
-        self.status = 'Dirty'
+        super().__init__("ReflexVacuumAgent")
 
-    def perceive(self, percept: Percept, environment: Environment) -> Action:
-        # TODO: Verify we can unroll the percept tuple correctly!
-        location, status = percept.info
-        if status == 'Dirty':
-            return ReflexVacuumAction('Suck')
-        elif location == 'A':
-            return ReflexVacuumAction('Right')
+    def perceive(self, percept: Percept) -> Action:
+        # Unpack the information from the percept
+        # See VacuumEnvironment.get_percept() for the tuple structure
+        self.location, self.status = percept.info
+        if self.status == 'Dirty':
+            return ReflexVacuumSuckAction()
+        elif self.location == 'A':
+            return ReflexVacuumMoveAction('Right')
         else:
-            return ReflexVacuumAction('Left')
-        
-class ReflexVacuumAction(Action):
-    def __init__(self, name, cost=1):
-        super().__init__(name, cost)
-        self.name = name
-        self.cost = cost
+            return ReflexVacuumMoveAction('Left')
 
-    def perform(self, agent: Agent, environment: Environment) -> list[Effect]:
-        effects = []
-        if self.name == 'Suck':
-            old_status = environment.state.get(f'location[{agent.location}].status', 'Unknown')
-            environment.clean(agent.location) # TODO: This should be a method of the environment!
-            effects.append(Effect(agent, 'Clean', f'location[{agent.location}].status', 'Clean', old_status))
-        elif self.name == 'Right':
-            old_location = agent.location
+
+class ReflexVacuumMoveAction(Action):
+    def __init__(self, direction: str):
+        super().__init__(direction, 1)
+        self.direction = direction
+
+    def perform(self, agent: VacuumAgent, environment: VacuumEnvironment) -> list[Effect]:
+        old_location = agent.location
+        if self.direction == 'Right':
             agent.location = 'B'
-            effects.append(Effect(agent, 'Move', f'agent[{agent.name}].location', agent.location, old_location))
-        elif self.name == 'Left':
-            old_location = agent.location
+        else:
             agent.location = 'A'
-            effects.append(Effect(agent, 'Move', f'agent[{agent.name}].location', agent.location, old_location))
-        return effects
+        return [Effect(agent, 'Move', f'agent[{agent.name}].location', agent.location, old_location)]
+
+class ReflexVacuumSuckAction(Action):
+    def __init__(self):
+        super().__init__('Suck', 1)
+
+    def perform(self, agent: VacuumAgent, environment: VacuumEnvironment) -> list[Effect]:
+        new_status, old_status = environment.clean(agent.location)
+        return [Effect(agent, 'Clean', f'location[{agent.location}].status', new_status, old_status)]

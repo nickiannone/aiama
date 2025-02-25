@@ -7,7 +7,7 @@ from chapters.c02.base.percept import Percept
 
 class TestEnvironment(unittest.TestCase):
     def setUp(self):
-        self.agent = Agent()
+        self.agent = Agent("TestAgent")
         self.environment = Environment(agents=[self.agent])
 
     def test_initial_state(self):
@@ -15,7 +15,7 @@ class TestEnvironment(unittest.TestCase):
         self.assertIn(self.agent, self.environment.agents)
 
     def test_add_agent(self):
-        new_agent = Agent()
+        new_agent = Agent("AnotherAgent")
         self.environment.add_agent(new_agent)
         self.assertIn(new_agent, self.environment.agents)
 
@@ -30,13 +30,14 @@ class TestEnvironment(unittest.TestCase):
     def test_apply_action(self):
         class MockAction(Action):
             def perform(self, agent, environment):
-                return [MockEffect()]
+                environment.state["key"] = "value"
+                return [MockEffect(agent, "TestEffect", "key", "value", "old_value")]
 
         class MockEffect(Effect):
             def get_state(self):
                 return {'key': 'value'}
 
-        mock_action = MockAction()
+        mock_action = MockAction("TestAction")
         effects = self.environment.apply_action(self.agent, mock_action)
         self.assertEqual(self.environment.state, {'key': 'value'})
         self.assertEqual(len(effects), 1)

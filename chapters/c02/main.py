@@ -1,3 +1,9 @@
+from chapters.c02.vacuum.reflex_vacuum_agent import ReflexVacuumAgent
+from chapters.c02.vacuum.table_driven_agent import TableDrivenAgent
+from chapters.c02.vacuum.vacuum_agent_runner import VacuumAgentRunner
+from chapters.c02.vacuum.vacuum_environment import VacuumEnvironment
+
+
 def main():
     # Create an environment
     env = VacuumEnvironment()

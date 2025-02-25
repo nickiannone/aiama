@@ -7,7 +7,10 @@ from chapters.c02.base.percept import Percept
 class Environment:
     def __init__(self, agents=None):
         self.state = {}
-        self.agents = agents if agents is not None else []
+        self.agents = []
+        if agents is not None:
+            for agent in agents:
+                self.add_agent(agent)
 
     # Return the current state of the environment as a percept for the agent
     # TODO: Environments should be able to return a percept that is specific to the agent, 
@@ -20,6 +23,10 @@ class Environment:
     # Determine if the environment has reached a terminal state.
     def is_done(self) -> bool:
         raise NotImplementedError("This method should be overridden by subclasses")
+    
+    # Add agent-specific state to the environment.
+    def add_agent_state_to_environment(self, agent: Agent) -> None:
+        pass
 
     # Applies the action to the environment and updates the state based on the action's effects.
     # It also notifies other agents of the action's effects.
@@ -42,3 +49,4 @@ class Environment:
     # Add an agent to the environment
     def add_agent(self, agent: Agent):
         self.agents.append(agent)
+        self.add_agent_state_to_environment(agent)
