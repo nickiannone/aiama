@@ -15,7 +15,7 @@ class TestAgent(unittest.TestCase):
 
     def test_perceive_not_implemented(self):
         with self.assertRaises(NotImplementedError):
-            self.agent.perceive(Percept(), self.environment)
+            self.agent.perceive(Percept())
 
     def test_react(self):
         effect = Effect(agent=self.agent, name="TestEffect", key="location[A].status", new_value="Clean", old_value="Dirty")

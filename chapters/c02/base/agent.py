@@ -7,7 +7,7 @@ class Agent:
         self.name = name
 
     # Receive a Percept which can be matched to the appropriate Action
-    def perceive(self, percept, environment) -> Action:
+    def perceive(self, percept) -> Action:
         raise NotImplementedError("This method should be overridden by subclasses")
     
     # React to the effects of the action performed by the acting agent
